@@ -31,11 +31,17 @@ def scan_directory(root: Path):
             logging.info(f"The file {item} is a multi-media file, it will be moved")
             move_video(item)
 
+def cleanup_files(root: Path):
+    for dirpath in sorted(root.rglob("*"), reverse=True):
+        if dirpath.iterdir:
+            dirpath.unlink
+
 def cleanup_empty_dirs(root: Path):
     for dirpath in sorted(root.rglob("*"), reverse=True):
         logging.info(f"The founded directories are:{dirpath}")
         if dirpath.is_dir() and not any(dirpath.iterdir()):
             dirpath.rmdir()
+        else:
             logging.info(f"No files found, deleting directories...")
 
 
@@ -50,6 +56,7 @@ def main():
 # Program
     scan_directory(DOWNLOADS)
     logging.debug(f"The scan has started in {DOWNLOADS}")
+    cleanup_files(DOWNLOADS)
     cleanup_empty_dirs(DOWNLOADS)
     logging.debug(f"The cleanup process has started in {DOWNLOADS}")
 
