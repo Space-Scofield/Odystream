@@ -22,6 +22,7 @@ def classify(file: Path) -> Path:
 def move_video(file: Path):
     destination = classify(file) / file.name
     shutil.move(str(file), destination)
+    logging.info(f"Moving the file {file} to {destination}")
     if classify is SERIES: logging.info(f"The file {file.name} is a series")
     else: logging.info(f"The file {file.name} is a movie")
 
@@ -35,17 +36,15 @@ def cleanup_files(root: Path):
     for dirpath in sorted(root.rglob("*"), reverse=True):
         if dirpath.iterdir:
             dirpath.unlink
+            logging.info(f"Removing the file: {dirpath}")
 
 def cleanup_empty_dirs(root: Path):
     for dirpath in sorted(root.rglob("*"), reverse=True):
-        logging.info(f"The founded directories are:{dirpath}")
+        logging.info(f"Found the directory: {dirpath}")
         if dirpath.is_dir() and not any(dirpath.iterdir()):
             dirpath.rmdir()
-        else:
-            logging.info(f"No files found, deleting directories...")
+            logging.info(f"Removing the directory {dirpath}")
 
-
-    
 def main():
 # Logging
     logging.basicConfig(
@@ -55,10 +54,8 @@ def main():
     )
 # Program
     scan_directory(DOWNLOADS)
-    logging.debug(f"The scan has started in {DOWNLOADS}")
     cleanup_files(DOWNLOADS)
     cleanup_empty_dirs(DOWNLOADS)
-    logging.debug(f"The cleanup process has started in {DOWNLOADS}")
 
 if __name__ == "__main__":
     main()
